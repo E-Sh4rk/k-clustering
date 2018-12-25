@@ -154,7 +154,9 @@ class StreamingClustering:
     def __perform_batch_step(self):
         while True:
             r = self.beta * self.__r
-            while True:
+            loop_step1 = True
+            while loop_step1:
+                loop_step1 = False
                 #1: Drop free points that are not free anymore
                 self.__free_points = [x for x in self.__free_points if self.__pt_is_in_cluster(x) == False]
                 #2: Make a new cluster if necessary
@@ -168,8 +170,9 @@ class StreamingClustering:
                     if len(support) >= self.z + 1:
                         self.__clusters.append(pt1)
                         self.__clusters_support.append(support)
-                    else:
+                        loop_step1 = True
                         break
+
             #3: Check feasability and proceed to with offline clustering
             l = len(self.__clusters)
             n = len(self.__free_points)
