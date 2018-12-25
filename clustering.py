@@ -178,10 +178,12 @@ class StreamingClustering:
             n = len(self.__free_points)
             r = self.eta * self.__r / 4
             if l <= self.k and n <= (self.k - l + 1)*self.z:
-                (res,_) = robust_clustering_with_radius(self.__free_points, self.k-l, n-self.z, r, True)
-                self.__offline_clusters = res
+                res = robust_clustering_with_radius(self.__free_points, self.k-l, n-self.z, r, True)
                 if res!=None:
+                    (res,_) = res
+                    self.__offline_clusters = res
                     return
+            
             #4: Otherwise: increase radius, remove useless clusters
             self.__r *= self.alpha
             i = 0
