@@ -110,16 +110,16 @@ class StreamingClustering:
         self.eta = eta
         self.irf = initial_r_factor
 
-    __init_step = True
-    __init_pts = []
-    __r = 0
+        self.__init_step = True
+        self.__init_pts = []
+        self.__r = 0
 
-    __cur_batch = 0
-    __free_points = []
-    __clusters = []
-    __clusters_support = []
-    __offline_clusters = []
-    
+        self.__cur_batch = 0
+        self.__free_points = []
+        self.__clusters = []
+        self.__clusters_support = []
+        self.__offline_clusters = []
+
     def next(self, pt):
         if self.__init_step:
             self.__init_pts.append(pt)
@@ -153,11 +153,11 @@ class StreamingClustering:
 
     def __perform_batch_step(self):
         while True:
+            r = self.beta * self.__r
             while True:
                 #1: Drop free points that are not free anymore
                 self.__free_points = [x for x in self.__free_points if self.__pt_is_in_cluster(x) == False]
                 #2: Make a new cluster if necessary
-                r = self.beta * self.__r
                 for pt1 in self.__free_points:
                     support = []
                     for pt2 in self.__free_points:
@@ -198,7 +198,7 @@ class StreamingClustering:
         self.__perform_batch_step()
 
     def get_clusters(self):
-        (self.__clusters + self.__offline_clusters, self.eta * self.__r)
+        return (self.__clusters + self.__offline_clusters, self.eta * self.__r)
 
 class ParallelStreamingClustering:
     
@@ -224,5 +224,8 @@ class ParallelStreamingClustering:
             if r < min_r:
                 min_r = r
                 min_clusters = clusters
-        (min_clusters, min_r)
+        return (min_clusters, min_r)
     
+DEFAULT_ALPHA=4
+DEFAULT_BETA=8
+DEFAULT_ETA=16
