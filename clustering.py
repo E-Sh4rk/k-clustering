@@ -21,7 +21,11 @@ def all_interpoint_dists(pts):
     for pt1 in pts:
         for pt2 in pts:
             all_dists.add(distance(pt1,pt2))
-    return sorted(all_dists)
+    res = sorted(all_dists)
+    if 0 in res:
+        res.remove(0)
+    assert len(res) > 0
+    return res
 
 # OFFLINE ALGORITHM
 # See 'Algorithms for Facility Location Problems with Outliers'
