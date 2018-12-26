@@ -23,8 +23,8 @@ def clear_ax():
 clear_ax()
 
 # Add a button for parameters
-k = 5
-z = 5
+k = 3
+z = 3
 m = 5
 clust = None
 def start_clust():
