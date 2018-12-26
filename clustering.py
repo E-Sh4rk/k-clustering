@@ -88,11 +88,11 @@ def robust_clustering(pts, k, p, unrestricted_centers):
     last_sol = None
     while imax - imin >= 0:
         middle = imin + (imax-imin)//2
-        (sol,r) = robust_clustering_with_radius(pts, k, p, all_dists[middle], unrestricted_centers)
-        if sol == None:
+        res = robust_clustering_with_radius(pts, k, p, all_dists[middle], unrestricted_centers)
+        if res == None:
             imin = middle+1
         else:
-            last_sol = (sol, r)
+            last_sol = res
             imax = middle-1
     return last_sol
 

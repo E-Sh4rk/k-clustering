@@ -6,12 +6,14 @@ import clustering as cl
 from matplotlib.collections import PatchCollection
 
 # MainWindow
+pts = []
 circles = []
 fig = plt.figure()
 plt.subplots_adjust(bottom=0.2)
 ax = fig.add_subplot(111)
 def clear_ax():
-    global ax, circles, fig
+    global ax, circles, fig, pts
+    pts = []
     ax.clear()
     ax.set_xlim([0, 10])
     ax.set_ylim([0, 10])
@@ -59,9 +61,12 @@ bparam = Button(axparam, 'Parameters')
 bparam.on_clicked(set_params)
 
 # Add a button to "compute clusters"
-def show_clusters():
-    global circles, clust, fig
-    (clusters,r) = clust.get_clusters()
+def show_clusters(offline):
+    global circles, clust, fig, k, z, pts
+    if offline:
+        (clusters,r) = cl.robust_clustering(pts, k, len(pts)-z, False)
+    else:
+        (clusters,r) = clust.get_clusters()
     n = len(clusters)
     for i in range(len(circles)):
         if i >= n:
@@ -73,10 +78,21 @@ def show_clusters():
     fig.canvas.draw()
 
 def compute(event):
-    clust.end_batch_now()
+    try:
+        clust.end_batch_now()
+    except cl.Not_initialized:
+        print("Can't end batch during initialization step.")
+    show_clusters(False)
 axcompute = plt.axes([0.5, 0.05, 0.2, 0.075])
 bcompute = Button(axcompute, 'Force batch end')
 bcompute.on_clicked(compute)
+
+# Add button to use offline algorithm
+def show_offline(event):
+    show_clusters(True)
+axoffline = plt.axes([0.25, 0.05, 0.2, 0.075])
+boffline = Button(axoffline, 'Compute offline')
+boffline.on_clicked(show_offline)
 
 # Add points on click
 def onclick(event):
@@ -84,8 +100,9 @@ def onclick(event):
     if event.inaxes in [ax]:
         ax.scatter(event.xdata, event.ydata, s=12)
         clust.next((event.xdata, event.ydata))
+        pts.append((event.xdata, event.ydata))
         fig.canvas.draw()
-        show_clusters()
+        show_clusters(False)
 
 cid = fig.canvas.mpl_connect('button_press_event', onclick)
 
