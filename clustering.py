@@ -34,6 +34,8 @@ def all_interpoint_dists(pts):
 # set to 'False' for the original version of the algorithm (3-approx, centers among input points)
 # set to 'True' for the modified version of the algorithm (4-approx, unrestricted centers)
 def robust_clustering_with_radius(pts, k, p, optimal_r, unrestricted_centers):
+    if len(pts) == 0:
+        return ([], 0)
     # Building the disks
     n = len(pts)
     Gr = 2*optimal_r if unrestricted_centers else optimal_r
@@ -67,6 +69,8 @@ def robust_clustering_with_radius(pts, k, p, optimal_r, unrestricted_centers):
             for k in Ej:
                 E[k].remove(j)
             covered += 1
+            G[j] = []
+            E[j] = []
     # Result
     if covered < p:
         return None
