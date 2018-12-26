@@ -61,7 +61,8 @@ def robust_clustering_with_radius(pts, k, p, optimal_r, unrestricted_centers):
         weights = [len(G[j]) for j in range(n)]
         choosen = max_index(weights)
         centers.append(pts[choosen])
-        for j in E[choosen]:
+        Ec = E[choosen].copy()
+        for j in Ec:
             Gj = G[j].copy()
             for k in Gj:
                 G[k].remove(j)
