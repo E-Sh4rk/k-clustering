@@ -71,7 +71,7 @@ bclear.on_clicked(clear_all_points)
 def show_clusters(offline):
     global circles, clust, fig, k, z, pts
     if offline:
-        (clusters,r) = cl.robust_clustering(pts, k, len(pts)-z, False)
+        (clusters,r) = cl.robust_clustering(pts, k, len(pts)-z)
     else:
         (clusters,r) = clust.get_clusters()
     n = len(clusters)

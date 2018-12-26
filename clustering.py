@@ -3,7 +3,7 @@ import math
 def norm2(x,y):
     return math.sqrt (x*x + y*y)
 
-# Depending on the complexity of the distance, we can optionally add memoisation.
+# Depending on the complexity of the distance, we can add memoisation
 def distance(pt1, pt2):
     (x1,y1) = pt1
     (x2,y2) = pt2
@@ -77,10 +77,7 @@ def robust_clustering_with_radius(pts, k, p, optimal_r, unrestricted_centers):
         return None
     return (centers,4*optimal_r if unrestricted_centers else 3*optimal_r)
 
-# Parameter 'unrestricted_centers' :
-# set to 'False' for the original version of the algorithm (3-approx, centers among input points)
-# set to 'True' for the modified version of the algorithm (4-approx, unrestricted centers)
-def robust_clustering(pts, k, p, unrestricted_centers):
+def robust_clustering(pts, k, p):
     # Compute and sort all interpoint distances
     all_dists = all_interpoint_dists(pts)
     # Performs a binary search
@@ -89,7 +86,7 @@ def robust_clustering(pts, k, p, unrestricted_centers):
     last_sol = None
     while imax - imin >= 0:
         middle = imin + (imax-imin)//2
-        res = robust_clustering_with_radius(pts, k, p, all_dists[middle], unrestricted_centers)
+        res = robust_clustering_with_radius(pts, k, p, all_dists[middle], False)
         if res == None:
             imin = middle+1
         else:
