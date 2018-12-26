@@ -60,6 +60,13 @@ axparam = plt.axes([0.75, 0.05, 0.2, 0.075])
 bparam = Button(axparam, 'Parameters')
 bparam.on_clicked(set_params)
 
+# Add a button to clear all the points
+def clear_all_points(event):
+    start_clust()
+axclear = plt.axes([0.55, 0.05, 0.15, 0.075])
+bclear = Button(axclear, 'Clear')
+bclear.on_clicked(clear_all_points)
+
 # Add a button to "compute clusters"
 def show_clusters(offline):
     global circles, clust, fig, k, z, pts
@@ -83,14 +90,14 @@ def compute(event):
     except cl.Not_initialized:
         print("Can't end batch during initialization step.")
     show_clusters(False)
-axcompute = plt.axes([0.5, 0.05, 0.2, 0.075])
+axcompute = plt.axes([0.3, 0.05, 0.2, 0.075])
 bcompute = Button(axcompute, 'Force batch end')
 bcompute.on_clicked(compute)
 
 # Add button to use offline algorithm
 def show_offline(event):
     show_clusters(True)
-axoffline = plt.axes([0.25, 0.05, 0.2, 0.075])
+axoffline = plt.axes([0.05, 0.05, 0.2, 0.075])
 boffline = Button(axoffline, 'Compute offline')
 boffline.on_clicked(show_offline)
 
