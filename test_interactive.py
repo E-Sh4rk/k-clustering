@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from easygui import *
+from easygui import multenterbox
 from matplotlib.widgets import Button
 from matplotlib.patches import Circle, Wedge, Polygon
 import clustering as cl
