@@ -211,13 +211,18 @@ class StreamingClustering:
     def get_clusters(self):
         return (self.__clusters + self.__offline_clusters, self.eta * self.__r)
 
+# With default alpha, beta and gamma, this algorithm guarantees the following approximation factor: 4^(1+(1/m))
 class ParallelStreamingClustering:
     
     def __init__(self,k,z,alpha,beta,eta,m):
         self.__instances = []
+        self.__guarantee = 4**(1+1/m)
         for i in range(m):
             irf = math.pow(alpha, (i+1)/m - 1)
             self.__instances.append(StreamingClustering(k,z,alpha,beta,eta,irf))
+
+    def approx_factor_guaranteed(self):
+        return self.__guarantee
 
     def next(self, pt):
         for inst in self.__instances:

@@ -1,36 +1,58 @@
 import clustering as cl
+import time
+import matplotlib.pyplot as plt
+
+optimal_radius_ub = 42
 
 k = 20
-z = 10 # TODO: Algo outputs greater result (138>114) when z=50. Investigate it. Not true when m=3 (55<72).
-m = 1  # I have implemented parameter m
 
-clust = cl.ParallelStreamingClustering(k,z,cl.DEFAULT_ALPHA,cl.DEFAULT_BETA,cl.DEFAULT_ETA,m)
+ms = [1,3,5]
+zs = [10,20,30,40,50]
 
-f = open("dataset/twitter_1000000.txt", "r")
-min_x = 0
-max_x = 0
-min_y = 0
-max_y = 0
-try:
-    for l in f:
-        data = (l.split("\t")[1]).split(" ")
-        x = float(data[0])
-        y = float(data[1])
-        if x < min_x:
-            min_x = x
-        if x > max_x:
-            max_x = x
-        if y < min_y:
-            min_y = y
-        if y > max_y:
-            max_y = y
-        clust.next((x, y))
+ts = []
+ratios = []
 
-    clust.end_batch_now()
-    (clusters, r) = clust.get_clusters()
-    print("Output radius: " + str(r))
-    print("Top-left point: (" + str(min_x) + ", " + str(min_y) + ")")
-    print("Bottom-right point: (" + str(max_x) + ", " + str(max_y) + ")")
-except:
-    print("Error for line: " + l)
+for m in ms:
+    m_ts = []
+    m_ratios = []
 
+    for z in zs:
+
+        clust = cl.ParallelStreamingClustering(k,z,cl.DEFAULT_ALPHA,cl.DEFAULT_BETA,cl.DEFAULT_ETA,m)
+        f = open("dataset/twitter_1000000.txt", "r")
+
+        timer = time.time()
+        for l in f:
+            data = (l.split("\t")[1]).split(" ")
+            x = float(data[0])
+            y = float(data[1])
+            clust.next((x, y))
+        clust.end_batch_now()
+        timer = time.time() - timer
+
+        (clusters, r) = clust.get_clusters()
+        ratio = r/optimal_radius_ub
+        m_ts.append(timer)
+        m_ratios.append(ratio)
+
+        print("For z={z} and m={m}:".format(z=z,m=m))
+        print("r={r}".format(r=r))
+        print("ratio={ratio}".format(ratio=ratio))
+        print("factor_guaranteed={g}".format(g=clust.approx_factor_guaranteed()))
+        print("time={t}".format(t=timer))
+        print("")
+
+    ts.append(m_ts)
+    ratios.append(m_ratios)
+
+f1 = plt.figure(1)
+plt.axis([min(zs), max(zs), 1, max(map(max, ratios))])
+for i in range(len(ratios)):
+    plt.plot(zs, ratios[i])
+
+f2 = plt.figure(2)
+plt.axis([min(zs), max(zs), 0, max(map(max, ts))])
+for i in range(len(ts)):
+    plt.plot(zs, ts[i])
+
+plt.show()
