@@ -1,0 +1,9 @@
+*.pdf
+*.gz
+*.out
+*.aux
+*.fdb_latexmk
+*.log
+*.fls
+*.synctex(busy)
+_minted-Project

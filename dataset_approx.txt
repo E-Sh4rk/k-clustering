@@ -1,3 +1,0 @@
-360x180
-Can be covered by 18 squares of dim 60x60
-=> Can be covered by 18 circles of radius 60*sqrt(2)/2 = 42

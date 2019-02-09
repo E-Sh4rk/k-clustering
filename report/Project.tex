@@ -1,0 +1,105 @@
+% Header
+\documentclass[a4paper]{article}%      autres choix : book, report
+\usepackage[utf8]{inputenc}%           gestion des accents (source)
+\usepackage[T1]{fontenc}%              gestion des accents (PDF)
+\usepackage[francais]{babel}%          gestion du français
+\usepackage{textcomp}%                 caractères additionnels
+\usepackage{mathtools,amssymb,amsthm}% packages de l'AMS + mathtools
+\usepackage{lmodern}%                  police de caractère
+\usepackage[top=2cm,left=2cm,right=2cm,bottom=2cm]{geometry}%     gestion des marges
+\usepackage{graphicx}%                 gestion des images
+\usepackage{array}%                    gestion améliorée des tableaux
+\usepackage{calc}%                     syntaxe naturelle pour les calculs
+\usepackage{titlesec}%                 pour les sections
+\usepackage{titletoc}%                 pour la table des matières
+\usepackage{fancyhdr}%                 pour les en-têtes
+\usepackage{titling}%                  pour le titre
+\usepackage{enumitem}%                 pour les listes numérotées
+\usepackage{hyperref}%                 gestion des hyperliens
+
+\hypersetup{pdfstartview=XYZ}%         zoom par défaut
+
+\setlength{\droptitle}{-5em}   % This is your set screw
+\title{\vspace{1.5cm}Graph Mining Project}
+\author{Mickaël LAURENT}
+\date{\vspace{-5ex}}
+
+\pagenumbering{gobble}
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+
+\begin{document}
+
+	\maketitle
+
+	\section{Implementation}
+
+	I have implemented this project in Python 3.
+	The implementation of the two algorithms are in the file \textit{clustering.py}.
+
+	\paragraph{Offline algorithm} The offline algorithm is implemented in the function \textit{robust\_clustering}.
+	It calls the function \textit{robust\_clustering\_with\_radius} with the best \textit{optimal radius} argument by performing a dichotomic search.
+	The function \textit{robust\_clustering\_with\_radius} has a parameter \textit{unrestricted\_centers}, which can be set True if we want to use
+	the slightly modified version of this algorithm used by the streaming algorithm.\\
+
+	\begin{tabular}{|l|l|l|}
+		\hline
+		\textit{Unrestricted\_center} & Centers & Guarantee \\
+		\hline
+		False & Among input points & 3-approximation \\
+		True & Unrestricted & 4-approximation \\
+		\hline
+	 \end{tabular}\\
+
+	\paragraph{Streaming algorithm} The streaming algorithm is implemented in the class \textit{StreamingClustering}.
+	I used a class so that we can initialize and use multiple independant instances
+	of the streaming clustering algorithm in the same time.\\
+
+	I have also implemented the parallelized version of this algorithm in order to have better guarantees.
+	It is implemented in the class \textit{ParallelStreamingClustering} that takes the parameter \textit{m} as input.
+	Indeed, it is not really a parallel implementation: it is just a sequential execution of multiple instances
+	of \textit{StreamingClustering}. As a consequence, using this implementation with $m=2$ will probably
+	takes twice more time than using it with $m=1$.
+
+	\paragraph{Testing} In order to test my implementation, I have designed an interactive tool that uses
+	\textit{matplotlib}. You can test it by running the file \textit{test\_interactive.py}. It allows the user to
+	add some points by clicking on the canvas, to see the output of the streaming algorithm in live and to compare it
+	with the offline algorithm.
+
+	\section{Upper-bound of an optimal solution}
+
+	\paragraph{Method}
+	In order to find an upper bound, I have made a geometric reasoning.
+	We use an euclidean distance, and the coordinates of the dataset go from -180 to 180 on the x-axis, and -90 to 90 on the y-axis.
+	So we can represent the space of the dataset by a rectangle of dimensions 360x180.\\
+
+	As we want at most $k=20$ clusters, we should find out what is the minimal radius $r$ such that 20 circles of radius $r$
+	can cover the entire 360x180 rectangle. I have solved this problem approximately by noticing that 18 squares of dimension 60x60
+	can cover a 360x180 rectangle, and so can do 18 circles of radius $\frac{60}{2}\sqrt{2}$ (of course, they will overlap, so it may not be optimal).
+	It gives us the following upper bound for the optimal solution: 42.
+
+	\paragraph{Limits}
+
+	This upper-bound is very approximative. Indeed, it assumes a quite uniform repartition of the points in the 360x180 rectangle:
+	if all the points are distributed into a few small areas with nothing around, it would be possible to cover all the points without covering
+	the whole surface of the rectangle. In order to observe that, I have drawn all the point on a 360x180 canvas using \textit{matplotlib} (see image below).
+	Altough we can see some almost-empty areas, it does not seem to be possible to cover all the points without covering almost the entire rectangle,
+	so our upper-bound may not be \textbf{so} bad.\\
+
+	TODO: INSERT IMAGE
+
+	Another thing to notice is that our invariant does not take $z$ (the number of outliers) into account.
+	Indeed, I have not found any idea to take it into account without performing a way more detailled analysis.\\
+
+	Knowing all of that, it is probably not the best upper-bound.
+	However, we should keep in mind that 42 is also the \textit{Answer to the Ultimate Question of Life, the Universe, and Everything}.
+	Moreover, I am personally convinced that \textit{the Ultimate Question of Life, the Universe, and Everything} is the following:\\
+	\textit{What is the minimal radius $r$ such that we can cover all the points described in the well-known dataset twitter\_1000000.txt with
+	20 circles of radius $r$, using an eucliden distance and allowing to ignore at most 10 of these points ?},\\
+	in wich case our upper-bound would be optimal.
+	Consequently, I have decided to keep this upper-bound.
+
+
+	\section{Plots and discussion}
+
+\end{document}
