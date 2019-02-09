@@ -80,13 +80,13 @@
 
 	\paragraph{Limits}
 
-	This upper-bound is very approximative. Indeed, it assumes a quite uniform repartition of the points in the 360x180 rectangle:
-	if all the points are distributed into a few small areas with nothing around, it would be possible to cover all the points without covering
+	This upper-bound is very approximative. Indeed, it assumes the points to be distributed over the whole 360x180 rectangle:
+	if all the points were distributed into a few small areas with nothing around, it would be possible to cover all the points without covering
 	the whole surface of the rectangle. In order to observe that, I have drawn all the point on a 360x180 canvas using \textit{matplotlib} (see image below).
 	Altough we can see some almost-empty areas, it does not seem to be possible to cover all the points without covering almost the entire rectangle,
 	so our upper-bound may not be \textbf{so} bad.\\
 
-	TODO: INSERT IMAGE
+	\includegraphics{dataset_preview}
 
 	Another thing to notice is that our invariant does not take $z$ (the number of outliers) into account.
 	Indeed, I have not found any idea to take it into account without performing a way more detailled analysis.\\
@@ -99,7 +99,8 @@
 	in wich case our upper-bound would be optimal.
 	Consequently, I have decided to keep this upper-bound.
 
-
 	\section{Plots and discussion}
+
+	INSERT TABLE OF GUARANTEES FOR THE ALGO DEPENDING ON M
 
 \end{document}
