@@ -59,7 +59,7 @@
 	It is implemented in the class \textit{ParallelStreamingClustering} that takes the parameter \textit{m} as input.
 	Indeed, it is not really a parallel implementation: it is just a sequential execution of multiple instances
 	of \textit{StreamingClustering}. As a consequence, using this implementation with $m=2$ will probably
-	takes twice more time than using it with $m=1$.
+	take twice more time than using it with $m=1$.
 
 	\paragraph{Testing} In order to test my implementation, I have designed an interactive tool that uses
 	\textit{matplotlib}. You can test it by running the file \textit{test\_interactive.py}. It allows the user to
@@ -101,6 +101,76 @@
 
 	\section{Plots and discussion}
 
-	INSERT TABLE OF GUARANTEES FOR THE ALGO DEPENDING ON M
+	I have realized the plots suggested in the subject not only for $m=1$, but also for $m=3$ and $m=5$ because the
+	results I obtained for $m=1$ seemed quite weird to me. Comparing them to the results obtained with $m=3$ and $m=5$
+	allowed me to propose an explanation.\\
+
+	First of all, let's remind the guarantees of the streaming algorithm:
+	\begin{enumerate}
+		\item Approximation factor: $4+\epsilon$ with $\epsilon=(\eta/\alpha)\alpha^{1/m}=4\times4^{1/m}$
+		\item Memory used: $\mathcal{O}(\epsilon^{-1}kz)$
+		\item Running time: $\mathcal{O}(\epsilon^{-1}(kzn + (kz)^2\log P))$ with $P$ fixed for a given instance\\
+		(\textit{$P$ is the ratio of the optimal radius to the shortest distance between any two distinct input points})
+	\end{enumerate}
+
+	In our setting, $kzn >> (kz)^2\log P$ so running time can be approximated by $\mathcal{O}(\epsilon^{-1}(kzn))$.
+
+	It gives the following expectations:\\
+
+	\begin{tabular}{|l|l|l|l|}
+		\hline
+		With fixed $z$ & $m=1$ & $m=3$ & $m=5$ \\
+		\hline
+		Approximation factor & 16 & 6.3 & 5.3 \\
+		Memory used & $M$ & $2.5M$ & $3M$ \\
+		Running time & $T$ & $2.5T$ & $3T$ \\
+		\hline
+	 \end{tabular}\\
+
+	\begin{tabular}{|l|l|l|l|l|l|}
+		\hline
+		With fixed $m$ & $z=10$ & $z=20$ & $z=30$ & $z=40$ & $z=50$ \\
+		\hline
+		Memory used & $M$ & $2M$ & $3M$ & $4M$ & $5M$ \\
+		Running time & $T$ & $2T$ & $3T$ & $4T$ & $5T$ \\
+		\hline
+	 \end{tabular}\\
+
+	Below are the plots I have obtained. Blue, orange and green curves are respectively with $m=1$, $m=3$ and $m=5$.
+	Note that the approximation factor is computed using the upper-bound found in the previous section, which does not
+	take the parameter $z$ into account. Consequently, when refering to the \textit{approximation factor},
+	it actually refers to the ratio of the radius found by the algorithm for a given value of z to the approximate
+	optimal radius for z=0.
+
+	\begin{figure}[h]
+		\caption{Approximation factor depending on $z$}
+		\centering
+		\includegraphics[width=0.55\textwidth]{curve_r}
+	\end{figure}
+	\begin{figure}[h]
+		\caption{Running time depending on $z$}
+		\centering
+		\includegraphics[width=0.55\textwidth]{curve_t}
+	\end{figure}
+
+	Concerning the approximation factor, the guarantee is respected for each curve.
+	However, for the blue curve ($m=1$), the evolution of the radius found when $z$ increase is quite surprising:
+	indeed, a solution found for $z=10$ is still valid for $z=50$, so we could expect the algorithm to
+	find a solution at least as good when $z=50$ as when $z=10$. There does not seem to be this problem when $m=3$ and $m=5$.\\
+	
+	Here is a possible explanation. I think that the result of this algorithm is very dependent on the initial radius
+	computed during the initialization phase. The duration of this phase depends on $z$, and so choosing a different
+	$z$ can change the value of the initial radius in a quite random way (this can explain the behavior observed
+	with the blue curve). However, when increasing $m$, we run more instances of this algorithm with each time
+	a different value for the initial radius (and only the best result is returned). This tends to reduce this
+	\textit{random factor} observed when $m=1$. For the same reason, it also improves the results in a significant way:
+	for $z=50$, the approximation factor with $m=5$ is more than 3 times better than with $m=1$.\\
+
+	Concerning the running time, it seems to increase slower than expected for $m=1$ (good news!).
+	It is not the case for $m=5$, for which the running time for $z=50$ is more than 3 times greater than the running time for $z=10$.
+	However, my implementation of the parallelized version is not efficient (it is actually sequential) so we should not
+	compare these measures with the bounds given in the paper.
+
+	
 
 \end{document}
